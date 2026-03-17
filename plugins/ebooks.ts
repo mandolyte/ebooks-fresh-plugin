@@ -12,48 +12,45 @@ function insert_string(val: string) : boolean {
     return success;
 }
 
-type UnicodeCharacterLabel = 
-  | "em-dash" 
-  | "en-dash" 
-  | "left-single-quote" 
-  | "right-single-quote" 
-  | "left-double-quote" 
-  | "right-double-quote" 
-  | "word-joiner" 
-  | "unknown";
+type SEUnicodeLabel = 
+  | "left-single-quote" | "right-single-quote" 
+  | "left-double-quote" | "right-double-quote"
+  | "em-dash" | "en-dash" | "figure-dash" | "two-em-dash"
+  | "non-breaking-hyphen" | "minus-sign"
+  | "ellipsis" | "word-joiner" | "hair-space"
+  | "turned-comma-glottal-stop" | "unknown";
 
 /**
- * Identifies specific Unicode punctuation and formatting characters.
+ * Identifies Unicode characters specifically used in Standard Ebooks 
+ * for professional typography and formatting.
  */
-function identifySpecialCharacter(char: string): UnicodeCharacterLabel {
+function identifySpecialCharacter(char: string): SEUnicodeLabel {
   switch (char) {
-    // Dashes
-    case '\u2014': 
-      return "em-dash";
-    case '\u2013': 
-      return "en-dash";
+    // --- Quotation Marks & Elision ---
+    case '\u2018': return "left-single-quote";
+    case '\u2019': return "right-single-quote"; // Also used for elision (e.g., 'n')
+    case '\u201C': return "left-double-quote";
+    case '\u201D': return "right-double-quote";
 
-    // Single Quotes
-    case '\u2018': 
-      return "left-single-quote";
-    case '\u2019': 
-      return "right-single-quote";
+    // --- Dashes & Hyphens ---
+    case '\u2014': return "em-dash";
+    case '\u2013': return "en-dash"; // Used for numeric/date ranges
+    case '\u2012': return "figure-dash"; // Used for phone numbers/non-range numbers
+    case '\u2E3A': return "two-em-dash"; // Used for obscured words or names
+    case '\u2011': return "non-breaking-hyphen"; // Used for stretched-out words
+    case '\u2212': return "minus-sign"; // Used for negative numbers and math
 
-    // Double Quotes
-    case '\u201C': 
-      return "left-double-quote";
-    case '\u201D': 
-      return "right-double-quote";
+    // --- Formatting & Spacing ---
+    case '\u2026': return "ellipsis";
+    case '\u2060': return "word-joiner"; // Invisible; prevents line breaks around dashes/ellipses
+    case '\u200A': return "hair-space"; // Ultra-thin space used to separate adjacent quotes
 
-    // Formatting
-    case '\u2060': 
-      return "word-joiner";
+    // --- Specialized Graphemes ---
+    case '\u02BB': return "turned-comma-glottal-stop"; // Used for glottal stops, distinct from quotes
 
-    default:
-      return `unknown`;
+    default: return "unknown";
   }
 }
-
  
 // Global action: Insert Em Dash
 function insert_em_dash(val: string) : void {
