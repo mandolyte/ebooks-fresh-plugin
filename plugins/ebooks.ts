@@ -153,10 +153,101 @@ async function identify_unicode_character(val: string) : void {
 }
 registerHandler("identify_unicode_character", identify_unicode_character);
 
+/**
+ * Converts a string to Title Case based on 
+ * Chicago Manual of Style (CMOS) rules,
+ * including handling for hyphens and internal punctuation breaks.
+ */
+function toChicagoTitleCase(title: string): string {
+  if (!title) return "";
 
+  // Articles, coordinating conjunctions, and prepositions to keep lowercase
+  const lowercaseWords = new Set([
+    "a", "an", "the", "and", "but", "for", "or", "nor", "as", "to",
+    "at", "by", "if", "in", "of", "off", "on", "per", "up", "via",
+    "with", "from", "into", "onto", "than"
+  ]);
 
+  const words = title.split(/\s+/);
 
+  const titleCased = words.map((word, index) => {
+    const isFirst = index === 0;
+    const isLast = index === words.length - 1;
 
+    // RULE: Always capitalize the first word after a colon, em-dash, or 
+    // terminal punctuation (subtitles).
+    let followsMajorPunctuation = false;
+    if (index > 0) {
+      const prevWord = words[index - 1];
+      // Checks for :, —, ?, or ! at the end of the previous word
+      if (/[:\u2014\?\!]$/.test(prevWord)) {
+        followsMajorPunctuation = true;
+      }
+    }
+
+    // RULE: Handle Hyphenated Words (e.g., "Self-Reliance" or "Hand-to-Hand")
+    // CMOS says capitalize both parts unless the second part is a minor word.
+    if (word.includes("-")) {
+      return word
+        .split("-")
+        .map((part, pIndex) => {
+          const isFirstPart = pIndex === 0;
+          const cleanPart = part.toLowerCase().replace(/[^\w]/g, "");
+
+          if (isFirstPart && (isFirst || followsMajorPunctuation)) return capitalize(part);
+          if (lowercaseWords.has(cleanPart)) return part.toLowerCase();
+          
+          return capitalize(part);
+        })
+        .join("-");
+    }
+
+    // Standard word processing
+    const cleanWord = word.toLowerCase().replace(/[^\w]/g, "");
+    
+    if (isFirst || isLast || followsMajorPunctuation || !lowercaseWords.has(cleanWord)) {
+      return capitalize(word);
+    }
+
+    return word.toLowerCase();
+  });
+
+  return titleCased.join(" ");
+}
+
+/**
+ * Helper to capitalize the first alphabetic character of a string.
+ */
+function capitalize(word: string): string {
+  if (!word) return "";
+  return word.replace(/[a-zA-Z]/, (match) => match.toUpperCase());
+}
+
+// Global action: Using Chicago Manual of Style rules 
+// for capitalization of titles
+async function cmos_titlecase() : void {
+  const bufferId = editor.getActiveBufferId();
+  const cursorInfo = editor.getPrimaryCursor();
+  if (! cursorInfo.selection) {
+      editor.setStatus(`Nothing is highlighted!`);
+  }
+  const startSelection = cursorInfo.selection.start;
+  const endSelection = cursorInfo.selection.end;
+  const bufText = await 
+      editor.getBufferText(bufferId, startSelection, endSelection);
+  const titleCased = toChicagoTitleCase(bufText);
+  let success = await 
+      editor.deleteRange(bufferId, startSelection, endSelection);
+  success = editor.insertText(bufferId, startSelection, titleCased);
+  if (!success) {
+    editor.setStatus("Failed to title case string");
+    return;
+  }
+
+  const statusMessage = `Titlecased: ${titleCased}`;
+  editor.setStatus(statusMessage)
+}
+registerHandler("cmos_titlecase", cmos_titlecase);
 
 
 // Global action: Replace selection with double quoted selection
@@ -277,4 +368,9 @@ editor.registerCommand(
   "Ebooks: Single Quote Selection",
   "Single Quote Selection",
   "single_quote_selection"
+);
+editor.registerCommand(
+  "Ebooks: Titlecase",
+  "Chicago Manual of Style Title Case Rules",
+  "cmos_titlecase"
 );
