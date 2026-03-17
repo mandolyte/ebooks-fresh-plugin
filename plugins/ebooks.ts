@@ -162,8 +162,11 @@ registerHandler("identify_unicode_character", identify_unicode_character);
 
 
 
-// Global action: Replace selection with quoted selection
-async function quote_selection() : void {
+// Global action: Replace selection with double quoted selection
+async function double_quote_selection() : void {
+  const rquote = '\u201D';
+  const lquote = '\u201C';
+
   const bufferId = editor.getActiveBufferId();
   const cursorInfo = editor.getPrimaryCursor();
   if (! cursorInfo.selection) {
@@ -174,21 +177,51 @@ async function quote_selection() : void {
   const bufText = await 
       editor.getBufferText(bufferId, startSelection, endSelection);
 
-  const success1 = editor.insertText(bufferId, startSelection, "'");
-  if (!success1) {
+  let success = editor.insertText(bufferId, endSelection, rquote);
+  if (!success) {
+    editor.setStatus("Failed to insert end quote");
+    return
+  }
+  success = editor.insertText(bufferId, startSelection, lquote);
+  if (!success) {
     editor.setStatus("Failed to insert start quote");
     return;
   }
 
-  const success2 = editor.insertText(bufferId, endSelection+1, "'");
-  if (!success2) {
-    editor.setStatus("Failed to insert end quote");
-    return
-  }
   const statusMessage = `Quoted: ${bufText}`;
   editor.setStatus(statusMessage)
 }
-registerHandler("quote_selection", quote_selection);
+registerHandler("double_quote_selection", double_quote_selection);
+// Global action: Replace selection with single quoted selection
+async function single_quote_selection() : void {
+  const rquote = '\u2019';
+  const lquote = '\u2018';
+
+  const bufferId = editor.getActiveBufferId();
+  const cursorInfo = editor.getPrimaryCursor();
+  if (! cursorInfo.selection) {
+      editor.setStatus(`Nothing is highlighted!`);
+  }
+  const startSelection = cursorInfo.selection.start;
+  const endSelection = cursorInfo.selection.end;
+  const bufText = await 
+      editor.getBufferText(bufferId, startSelection, endSelection);
+
+  let success = editor.insertText(bufferId, endSelection, rquote);
+  if (!success) {
+    editor.setStatus("Failed to insert end quote");
+    return
+  }
+  success = editor.insertText(bufferId, startSelection, lquote);
+  if (!success) {
+    editor.setStatus("Failed to insert start quote");
+    return;
+  }
+
+  const statusMessage = `Quoted: ${bufText}`;
+  editor.setStatus(statusMessage)
+}
+registerHandler("single_quote_selection", single_quote_selection);
  
 /*
 *
@@ -239,7 +272,12 @@ editor.registerCommand(
 
 // String Transformations
 editor.registerCommand(
-  "Hello: Quote Selection",
-  "Quote Selection",
-  "quote_selection"
+  "Ebooks: Double Quote Selection",
+  "Double Quote Selection",
+  "double_quote_selection"
+);
+editor.registerCommand(
+  "Ebooks: Single Quote Selection",
+  "Single Quote Selection",
+  "single_quote_selection"
 );
