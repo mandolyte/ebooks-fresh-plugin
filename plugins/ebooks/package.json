@@ -7,6 +7,6 @@
   "author": "Cecil New",
   "license": "MIT",
   "fresh": {
-    "main": "plugin.ts"
+    "entry": "plugin.ts"
   }
 }
