@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sinelaw/fresh/main/crates/fresh-editor/plugins/schemas/package.schema.json",
+  "name": "ebooks",
+  "version": "0.1.0",
+  "description": "Actions to support ebook productions",
+  "type": "plugin",
+  "author": "Cecil New",
+  "license": "MIT",
+  "fresh": {
+    "main": "plugin.ts"
+  }
+}

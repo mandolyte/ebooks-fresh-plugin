@@ -1,3 +1,7 @@
+// Fresh Plugin
+// Documentation: https://github.com/user/fresh/blob/main/docs/plugins.md
+
+const editor = getEditor();
  /*
  * To Do - add some documentation
  */
@@ -374,3 +378,10 @@ editor.registerCommand(
   "Chicago Manual of Style Title Case Rules",
   "cmos_titlecase"
 );
+
+// Example: Add a keybinding in your Fresh config:
+// {
+//   "keyBindings": {
+//     "ctrl+alt+h": "command:hello"
+//   }
+// }
