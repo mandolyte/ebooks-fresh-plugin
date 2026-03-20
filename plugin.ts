@@ -341,11 +341,13 @@ async function se_titlecase() : void {
       editor.getBufferText(bufferId, startSelection, endSelection);
       
   // spawn the se titlecase command
-  const spawnProcess = editor.spawnProcess("se", ["titlecase", bufText]);
+  const spawnProcess = await editor.spawnProcess("se", ["titlecase", bufText]);
   if (spawnProcess.exit_code === 0) {
       editor.setStatus("se titlecase OK!");
+      editor.debug("Spawn of SE succeeded.")
   } else {
     editor.setStatus(`se titlecase failed: ${spawnProcess.stderr.split('\n')[0]}`);
+    editor.debug("Spawn of SE failed. Stderr:")
     editor.debug(spawnProcess.stderr);
     return;
   }
@@ -362,15 +364,7 @@ async function se_titlecase() : void {
   const statusMessage = `Titlecased: ${titleCased}`;
   editor.setStatus(statusMessage)
 }
-registerHandler("cmos_titlecase", cmos_titlecase);
-
-globalThis.search_files = async function(): Promise<void> {
-  const result = await editor.spawnProcess("rg", ["TODO", "."]);
-  if (result.exit_code === 0) {
-    editor.setStatus(`Found matches`);
-  }
-};
-
+registerHandler("se_titlecase", se_titlecase);
  
 /*
 *
@@ -435,10 +429,8 @@ editor.registerCommand(
   "Chicago Manual of Style Title Case Rules",
   "cmos_titlecase"
 );
-
-// Example: Add a keybinding in your Fresh config:
-// {
-//   "keyBindings": {
-//     "ctrl+alt+h": "command:hello"
-//   }
-// }
+editor.registerCommand(
+  "Ebooks: SE Titlecase",
+  "Titlecase per Standard Ebooks Tooling",
+  "se_titlecase"
+);

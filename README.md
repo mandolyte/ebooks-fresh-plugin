@@ -1,8 +1,8 @@
-# Fresh Plugins
+# Fresh Plugin for Ebook Unicode Support
 
 This repo contains plugins for the Fresh [editor](https://github.com/sinelaw/fresh).
 
-At this writing, it only has one plugin that supports use 
+This plugin that supports use 
 of Unicode Typography used in EPUB book productions.
 This plugin was created to support my projects for 
 [Standard Ebooks](https://standardebooks.org/ebooks).
@@ -24,6 +24,10 @@ This plugin adds a number of commands to support needed Unicode characters used 
     - Double quote selection
     - Single quote selection
     - Titlecase (per Chicago Manual of Style)
+    - Titlecase per Standard Ebooks (SE)
+
+*Note!* The SE Titlecase action requires that the SE Tooling be
+installed and on the path. Essentially, it runs `se titlecase "my book title"`.
 
 ### Test String for Unicode Character Identification
 
