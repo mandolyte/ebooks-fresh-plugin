@@ -1,6 +1,15 @@
 // Fresh Plugin
 // Documentation: https://github.com/user/fresh/blob/main/docs/plugins.md
 
+/*
+Test
+fresh --check-plugin plugin.ts 
+
+Validate
+$ ./validate.sh 
+✓ package.json is valid
+*/
+
 const editor = getEditor();
  /*
  * To Do - add some documentation
@@ -234,6 +243,7 @@ async function cmos_titlecase() : void {
   const cursorInfo = editor.getPrimaryCursor();
   if (! cursorInfo.selection) {
       editor.setStatus(`Nothing is highlighted!`);
+      return;
   }
   const startSelection = cursorInfo.selection.start;
   const endSelection = cursorInfo.selection.end;
@@ -284,6 +294,7 @@ async function double_quote_selection() : void {
   editor.setStatus(statusMessage)
 }
 registerHandler("double_quote_selection", double_quote_selection);
+
 // Global action: Replace selection with single quoted selection
 async function single_quote_selection() : void {
   const rquote = '\u2019';
@@ -314,6 +325,52 @@ async function single_quote_selection() : void {
   editor.setStatus(statusMessage)
 }
 registerHandler("single_quote_selection", single_quote_selection);
+
+// Global action: Using Standard Ebooks Tooling 
+// Title case string. Note: the "se" tool must be on the path!
+async function se_titlecase() : void {
+  const bufferId = editor.getActiveBufferId();
+  const cursorInfo = editor.getPrimaryCursor();
+  if (! cursorInfo.selection) {
+      editor.setStatus(`Nothing is highlighted!`);
+      return;
+  }
+  const startSelection = cursorInfo.selection.start;
+  const endSelection = cursorInfo.selection.end;
+  const bufText = await 
+      editor.getBufferText(bufferId, startSelection, endSelection);
+      
+  // spawn the se titlecase command
+  const spawnProcess = editor.spawnProcess("se", ["titlecase", bufText]);
+  if (spawnProcess.exit_code === 0) {
+      editor.setStatus("se titlecase OK!");
+  } else {
+    editor.setStatus(`se titlecase failed: ${spawnProcess.stderr.split('\n')[0]}`);
+    editor.debug(spawnProcess.stderr);
+    return;
+  }
+  
+  let success = await 
+      editor.deleteRange(bufferId, startSelection, endSelection);
+  const titleCased = `${spawnProcess.stdout.split('\n')[0]}`;
+  success = editor.insertText(bufferId, startSelection, titleCased);
+  if (!success) {
+    editor.setStatus("Failed to title case string");
+    return;
+  }
+
+  const statusMessage = `Titlecased: ${titleCased}`;
+  editor.setStatus(statusMessage)
+}
+registerHandler("cmos_titlecase", cmos_titlecase);
+
+globalThis.search_files = async function(): Promise<void> {
+  const result = await editor.spawnProcess("rg", ["TODO", "."]);
+  if (result.exit_code === 0) {
+    editor.setStatus(`Found matches`);
+  }
+};
+
  
 /*
 *
