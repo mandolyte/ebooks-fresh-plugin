@@ -25,6 +25,8 @@ This plugin adds a number of commands to support needed Unicode characters used 
     - Single quote selection
     - Titlecase (per Chicago Manual of Style)
     - Titlecase per Standard Ebooks (SE)
+- *Miscellaneous*
+    + Insert Split Marker: This inserts the split marker at the cursor position `<!--se:split-->`
 
 *Note!* The SE Titlecase action requires that the SE Tooling be
 installed and on the path. Essentially, it runs `se titlecase "my book title"`.
