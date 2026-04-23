@@ -64,6 +64,24 @@ function identifySpecialCharacter(char: string): SEUnicodeLabel {
     default: return "unknown";
   }
 }
+
+// Global action: Insert Em Dash
+function insert_split_marker(val: string) : void {
+    const split_marker = "<!--se:split-->";
+    const success = insert_string(split_marker);
+    if (!success) {
+        editor.setStatus("Failed to insert split marker: ${split_marker}");
+        return;
+    }
+    const statusMessage = `Inserted Split Marker (${split_marker})`;
+    editor.setStatus(statusMessage);
+}
+registerHandler("insert_split_marker", insert_split_marker);
+editor.registerCommand(
+  "EBooks: Insert Split Marker",
+  "Insert Split Marker",
+  "insert_split_marker"
+);
  
 // Global action: Insert Em Dash
 function insert_em_dash(val: string) : void {
