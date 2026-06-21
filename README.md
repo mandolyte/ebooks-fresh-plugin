@@ -31,6 +31,7 @@ This plugin adds a number of commands to support needed Unicode characters used 
     - Single quote selection
     - Titlecase (per Chicago Manual of Style)
     - Titlecase per Standard Ebooks (SE)
+    - Convert an `<i>` element to an `<em>` element.
 - *Miscellaneous*
     + Insert Split Marker: This inserts the split marker at the cursor position `<!--se:split-->`
 

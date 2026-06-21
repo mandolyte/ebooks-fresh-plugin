@@ -14,6 +14,32 @@ const editor = getEditor();
  /*
  * To Do - add some documentation
  */
+ 
+/**
+ * Extracts the content between the opening <i> and the closing </i> tag.
+ * @param xhtmlString The input string containing the xhtml content.
+ * @throws Error if the string does not start with <i> or if </i> is missing.
+ * @returns The content between the tags.
+ */
+function extractItalicContent(xhtmlString: string): string {
+  const startTag = "<i>";
+  const endTag = "</i>";
+
+  // Validate that the string begins with the opening element
+  if (!xhtmlString.startsWith(startTag)) {
+    throw new Error("The string does not begin with the '<i>' element.");
+  }
+
+  const contentStartIndex = startTag.length;
+  const endIndex = xhtmlString.indexOf(endTag, contentStartIndex);
+
+  // Validate that the closing element exists
+  if (endIndex === -1) {
+    throw new Error("The closing '</i>' element could not be found.");
+  }
+
+  return xhtmlString.substring(contentStartIndex, endIndex);
+}
 
 // Reusable insert string function at cursor position
 function insert_string(val: string) : boolean {
@@ -66,6 +92,29 @@ function identifySpecialCharacter(char: string): SEUnicodeLabel {
   }
 }
  
+// Global action: Insert Em Dash
+function convert_i_to_em_element(val: string) : void {
+    let statusMessage = "";
+    try {
+      const xhtmlInput = "<i>Hello, World!</i> and this is extra text"; // Example input
+      const content = extractItalicContent(xhtmlInput);
+      
+      editor.setStatus("Extracted content:", content);
+      // Proceed with your plugin logic using the 'content' variable
+      
+    } catch (error) {
+      if (error instanceof Error) {
+        // You can differentiate between the two error types by checking the message
+        editor.setStatus("Plugin Error:", error.message);
+        
+        // Example: Alert the user or provide a fallback
+        // alert(`Failed to parse XHTML: ${error.message}`);
+      }
+    }    
+    editor.setStatus(statusMessage);
+}
+registerHandler("convert_i_to_em_element", convert_i_to_em_element);
+
 // Global action: Insert Em Dash
 function insert_em_dash(val: string) : void {
     const em_dash = "—";
@@ -452,4 +501,10 @@ editor.registerCommand(
   "Ebooks: SE Titlecase",
   "Titlecase per Standard Ebooks Tooling",
   "se_titlecase"
+);
+
+editor.registerCommand(
+  "Ebooks: Change <i> to <em>",
+  "Change <i> to <em>",
+  "convert_i_to_em_element"
 );
