@@ -10,7 +10,7 @@ This plugin was created to support my projects for
 *URL to import as Fresh Package: https://github.com/mandolyte/ebooks-fresh-plugin*
 
 ## To Do
-- Change italic element `i` to `em` for a string
+[x] Change italic element `i` to `em` for a string
 
 
 ## Unicode Helpers for Ebooks
