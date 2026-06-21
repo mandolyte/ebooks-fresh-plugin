@@ -94,13 +94,14 @@ function identifySpecialCharacter(char: string): SEUnicodeLabel {
  
 // Global action: Insert Em Dash
 function convert_i_to_em_element(val: string) : void {
-    let statusMessage = "";
+    let statusMessage = "Fall Thru case is invalid";
     try {
       const xhtmlInput = "<i>Hello, World!</i> and this is extra text"; // Example input
       const content = extractItalicContent(xhtmlInput);
       
       editor.setStatus("Extracted content:", content);
       // Proceed with your plugin logic using the 'content' variable
+      return;
       
     } catch (error) {
       if (error instanceof Error) {
@@ -110,6 +111,7 @@ function convert_i_to_em_element(val: string) : void {
         // Example: Alert the user or provide a fallback
         // alert(`Failed to parse XHTML: ${error.message}`);
       }
+      return;
     }    
     editor.setStatus(statusMessage);
 }
