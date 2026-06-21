@@ -32,6 +32,11 @@ This plugin adds a number of commands to support needed Unicode characters used 
     - Titlecase (per Chicago Manual of Style)
     - Titlecase per Standard Ebooks (SE)
     - Convert an `<i>` element to an `<em>` element.
+        + So this: `<i>This is emphasized!</i>` becomes...
+        + This: `<em>This is emphasized!</em>`
+        + Shows status error if string at cursor is an `<i>` element (no attributes)
+        + Shows status error if close element cannot be found (ie, `</i>` for the opening `<i>`)
+        + Note: this function written to be easily re-used for other matched element conversions
 - *Miscellaneous*
     + Insert Split Marker: This inserts the split marker at the cursor position `<!--se:split-->`
 

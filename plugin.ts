@@ -72,13 +72,12 @@ function identifySpecialCharacter(char: string): SEUnicodeLabel {
  * @throws Error if the string does not start with <i> or if </i> is missing.
  * @returns The content between the tags.
  */
-function extractItalicContent(xhtmlString: string): string {
-  const startTag = "<i>";
-  const endTag = "</i>";
+function extractEnclosedContent(xhtmlString: string, startTag: string, endTag: string): string {
+//   const startTag = "<i>";
+//   const endTag = "</i>";
 
   // Validate that the string begins with the opening element
   if (!xhtmlString.startsWith(startTag)) {
-    editor.setStatus("Error 1");
     throw new Error("The string does not begin with the '<i>' element.");
   }
 
@@ -87,7 +86,6 @@ function extractItalicContent(xhtmlString: string): string {
 
   // Validate that the closing element exists
   if (endIndex === -1) {
-    editor.setStatus("Error 2");
     throw new Error("The closing '</i>' element could not be found.");
   }
   const statusMessage = `start/end= ${contentStartIndex}/${endIndex}`;
@@ -99,29 +97,38 @@ function extractItalicContent(xhtmlString: string): string {
 }
 
 // Global action: Insert Em Dash
-function convert_i_to_em_element(val: string) : void {
-    let statusMessage = "Fall Thru case is invalid";
-    editor.setStatus(statusMessage);
+async function convert_i_to_em_element(val: string) : void {
+    const startTag = "<i>";
+    const endTag = "</i>";
+    const cursorInfo = editor.getPrimaryCursor();
+    const bufferId = editor.getActiveBufferId();
+    const cursorPosition = cursorInfo.position;
+    const bufLength = editor.getBufferLength(bufferId);
+    const bufText = await editor.getBufferText(bufferId, cursorPosition, bufLength);
 
     try {
-      const xhtmlInput = "<i>Hello, World!</i> and this is extra text"; // Example input
-      const xcontent:string  = extractItalicContent(xhtmlInput);
-      
-      editor.setStatus("Extracted content:", xcontent);
-      // Proceed with your plugin logic using the 'content' variable
-      return;
-      
+      const content  = extractEnclosedContent(bufText, startTag, endTag);
+      const newContent = `<em>${content}</em>`;
+      // Now that I have the emphasized content
+      // Delete the entire original string and insert the new one.
+      // The number of bytes to remove will be:
+      // currentPosition + length of "<i>" + length of content + length of "</i>"
+      const endDeleteRange = cursorPosition + startTag.length + content.length + endTag.length;
+      let success = await 
+          editor.deleteRange(bufferId, cursorPosition, endDeleteRange);
+      success = editor.insertText(bufferId, cursorPosition, newContent);
+      if (!success) {
+        editor.setStatus("Failed to convert <i> to <em>");
+        return;
+      }
+      editor.setStatus("Succeeded converting <i> to <em>");
     } catch (error) {
       if (error instanceof Error) {
         // You can differentiate between the two error types by checking the message
-        editor.setStatus("Plugin Error:", error.message);
+        editor.setStatus(`Error: ${error.message}`);
         
-        // Example: Alert the user or provide a fallback
-        // alert(`Failed to parse XHTML: ${error.message}`);
       }
-      return;
     }    
-    editor.setStatus(statusMessage);
 }
 registerHandler("convert_i_to_em_element", convert_i_to_em_element);
 
