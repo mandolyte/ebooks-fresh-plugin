@@ -15,32 +15,6 @@ const editor = getEditor();
  * To Do - add some documentation
  */
  
-/**
- * Extracts the content between the opening <i> and the closing </i> tag.
- * @param xhtmlString The input string containing the xhtml content.
- * @throws Error if the string does not start with <i> or if </i> is missing.
- * @returns The content between the tags.
- */
-function extractItalicContent(xhtmlString: string): string {
-  const startTag = "<i>";
-  const endTag = "</i>";
-
-  // Validate that the string begins with the opening element
-  if (!xhtmlString.startsWith(startTag)) {
-    throw new Error("The string does not begin with the '<i>' element.");
-  }
-
-  const contentStartIndex = startTag.length;
-  const endIndex = xhtmlString.indexOf(endTag, contentStartIndex);
-
-  // Validate that the closing element exists
-  if (endIndex === -1) {
-    throw new Error("The closing '</i>' element could not be found.");
-  }
-
-  return xhtmlString.substring(contentStartIndex, endIndex);
-}
-
 // Reusable insert string function at cursor position
 function insert_string(val: string) : boolean {
     const bufferId = editor.getActiveBufferId();
@@ -92,14 +66,48 @@ function identifySpecialCharacter(char: string): SEUnicodeLabel {
   }
 }
  
+/**
+ * Extracts the content between the opening <i> and the closing </i> tag.
+ * @param xhtmlString The input string containing the xhtml content.
+ * @throws Error if the string does not start with <i> or if </i> is missing.
+ * @returns The content between the tags.
+ */
+function extractItalicContent(xhtmlString: string): string {
+  const startTag = "<i>";
+  const endTag = "</i>";
+
+  // Validate that the string begins with the opening element
+  if (!xhtmlString.startsWith(startTag)) {
+    editor.setStatus("Error 1");
+    throw new Error("The string does not begin with the '<i>' element.");
+  }
+
+  const contentStartIndex = startTag.length;
+  const endIndex = xhtmlString.indexOf(endTag, contentStartIndex);
+
+  // Validate that the closing element exists
+  if (endIndex === -1) {
+    editor.setStatus("Error 2");
+    throw new Error("The closing '</i>' element could not be found.");
+  }
+  const statusMessage = `start/end= ${contentStartIndex}/${endIndex}`;
+
+  editor.setStatus(statusMessage);
+  const subString = xhtmlString.substring(contentStartIndex, endIndex);
+  editor.setStatus(subString);
+  return subString;
+}
+
 // Global action: Insert Em Dash
 function convert_i_to_em_element(val: string) : void {
     let statusMessage = "Fall Thru case is invalid";
+    editor.setStatus(statusMessage);
+
     try {
       const xhtmlInput = "<i>Hello, World!</i> and this is extra text"; // Example input
-      const content = extractItalicContent(xhtmlInput);
+      const xcontent:string  = extractItalicContent(xhtmlInput);
       
-      editor.setStatus("Extracted content:", content);
+      editor.setStatus("Extracted content:", xcontent);
       // Proceed with your plugin logic using the 'content' variable
       return;
       
