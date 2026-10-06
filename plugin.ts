@@ -132,6 +132,37 @@ async function convert_i_to_em_element(val: string) : void {
 }
 registerHandler("convert_i_to_em_element", convert_i_to_em_element);
 
+// Global action: Insert Endnote Reference
+function insert_endnote_reference(val: string) : void {
+    const astr = `<a href="endnotes.xhtml#note-N" id="noteref-N" epub:type="noteref">N</a>`;
+    const success = insert_string(astr);
+    if (!success) {
+        editor.setStatus("Failed to insert endnote reference");
+        return;
+    }
+    const statusMessage = `Inserted endnote reference`;
+    editor.setStatus(statusMessage);
+}
+registerHandler("insert_endnote_reference", insert_endnote_reference);
+
+// Global action: Insert Endnote Template
+function insert_endnote_template(val: string) : void {
+    const astr = `
+    	    		<li id="note-N">
+                        <p> <a href="chapter-X.xhtml#noteref-N" epub:type="backlink">↩</a></p>
+        	    	</li>
+    `;
+    const success = insert_string(astr);
+    if (!success) {
+        editor.setStatus("Failed to insert endnote template");
+        return;
+    }
+    const statusMessage = `Inserted endnote template`;
+    editor.setStatus(statusMessage);
+}
+registerHandler("insert_endnote_template", insert_endnote_template);
+
+
 // Global action: Insert Em Dash
 function insert_em_dash(val: string) : void {
     const em_dash = "—";
@@ -524,4 +555,14 @@ editor.registerCommand(
   "Ebooks: Change <i> to <em>",
   "Change <i> to <em>",
   "convert_i_to_em_element"
+);
+editor.registerCommand(
+  "Ebooks: Insert Endnote Template",
+  "Insert <li> for endnote",
+  "insert_endnote_template"
+);
+editor.registerCommand(
+  "Ebooks: Insert Endnote Reference",
+  "Insert <a> link to endnote",
+  "insert_endnote_reference"
 );
