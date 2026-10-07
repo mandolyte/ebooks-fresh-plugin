@@ -134,7 +134,10 @@ registerHandler("convert_i_to_em_element", convert_i_to_em_element);
 
 // Global action: Insert Endnote Reference
 function insert_endnote_reference(val: string) : void {
-    const astr = `<a href="endnotes.xhtml#note-N" id="noteref-N" epub:type="noteref">N</a>`;
+    const value = await editor.prompt("Endnote number:", "");
+    if (value === null) return;
+
+    const astr = `<a href="endnotes.xhtml#note-${value}" id="noteref-${value}" epub:type="noteref">${value}</a>`;
     const success = insert_string(astr);
     if (!success) {
         editor.setStatus("Failed to insert endnote reference");
