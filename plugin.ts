@@ -153,9 +153,19 @@ registerHandler("insert_endnote_reference", insert_endnote_reference);
 
 // Global action: Insert Endnote Template
 async function insert_endnote_template(val: string) : void {
+    const value1 = await editor.prompt("Endnote number:", "");
+    if (value1 === null || value1 === "" ) {
+        editor.setStatus("Endnote number is required!");
+        return;
+    }
+    const value2 = await editor.prompt("Chapter number:", "");
+    if (value2 === null || value2 === "" ) {
+        editor.setStatus("Chapter number is required!");
+        return;
+    }
     const astr = `
-    	    		<li id="note-N">
-                        <p> <a href="chapter-X.xhtml#noteref-N" epub:type="backlink">↩</a></p>
+    	    		<li id="note-${value1}">
+                        <p> <a href="chapter-${value2}.xhtml#noteref-${value1}" epub:type="backlink">↩</a></p>
         	    	</li>
     `;
     const success = insert_string(astr);
