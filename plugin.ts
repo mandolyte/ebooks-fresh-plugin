@@ -135,9 +135,11 @@ registerHandler("convert_i_to_em_element", convert_i_to_em_element);
 // Global action: Insert Endnote Reference
 async function insert_endnote_reference(val: string) : void {
     const value = await editor.prompt("Endnote number:", "");
-    if (value === null) return;
-    if (value === "") return;
-
+    if (value === null || value === "" ) {
+        editor.setStatus("Endnote number is required!");
+        return;
+    }
+        
     const astr = `<a href="endnotes.xhtml#note-${value}" id="noteref-${value}" epub:type="noteref">${value}</a>`;
     const success = insert_string(astr);
     if (!success) {
@@ -150,7 +152,7 @@ async function insert_endnote_reference(val: string) : void {
 registerHandler("insert_endnote_reference", insert_endnote_reference);
 
 // Global action: Insert Endnote Template
-function insert_endnote_template(val: string) : void {
+async function insert_endnote_template(val: string) : void {
     const astr = `
     	    		<li id="note-N">
                         <p> <a href="chapter-X.xhtml#noteref-N" epub:type="backlink">↩</a></p>
