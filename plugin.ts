@@ -136,6 +136,7 @@ registerHandler("convert_i_to_em_element", convert_i_to_em_element);
 async function insert_endnote_reference(val: string) : void {
     const value = await editor.prompt("Endnote number:", "");
     if (value === null) return;
+    if (value === "") return;
 
     const astr = `<a href="endnotes.xhtml#note-${value}" id="noteref-${value}" epub:type="noteref">${value}</a>`;
     const success = insert_string(astr);
