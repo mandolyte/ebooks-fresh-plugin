@@ -133,7 +133,7 @@ async function convert_i_to_em_element(val: string) : void {
 registerHandler("convert_i_to_em_element", convert_i_to_em_element);
 
 // Global action: Insert Endnote Reference
-function insert_endnote_reference(val: string) : void {
+async function insert_endnote_reference(val: string) : void {
     const value = await editor.prompt("Endnote number:", "");
     if (value === null) return;
 
